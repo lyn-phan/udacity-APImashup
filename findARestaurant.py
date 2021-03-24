@@ -7,14 +7,18 @@ import codecs
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
-foursquare_client_id = "PASTE_YOUR_ID_HERE"
-foursquare_client_secret = "YOUR_SECRET_HERE"
-
+foursquare_client_id = os.environ[foursquare_client_id]
+foursquare_client_secret = os.environ[foursquare_client_secret]
 
 def findARestaurant(mealType,location):
 	#1. Use getGeocodeLocation to get the latitude and longitude coordinates of the location string.
-	
-	#2.  Use foursquare API to find a nearby restaurant with the latitude, longitude, and mealType strings.
+    latitude, longitude = getGeocodeLocation(location)
+    url = (f"https://api.foursquare.com/v2/venues/search?client_id={foursquare_client_id}&client_secret={foursquare_client_secret}&{latitude}{longitude}&query={mealType}&limit=10")
+    h = httplib2.Http()
+    # response, content = h.request(url, 'GET')
+    result = json.loads(h.request(url, 'GET')[1])
+    return result
+    #2.  Use foursquare API to find a nearby restaurant with the latitude, longitude, and mealType strings.
 	#HINT: format for url will be something like https://api.foursquare.com/v2/venues/search?client_id=CLIENT_ID&client_secret=CLIENT_SECRET&v=20130815&ll=40.7,-74&query=sushi
 
 	#3. Grab the first restaurant
